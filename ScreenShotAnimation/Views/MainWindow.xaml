@@ -1,0 +1,286 @@
+﻿<Window
+    x:Class="ScreenShotAnimation.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:b="clr-namespace:ScreenShotAnimation.Behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:ScreenShotAnimation"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:ScreenShotAnimation.ViewModels"
+    xmlns:xb="http://schemas.microsoft.com/xaml/behaviors"
+    Title="MainWindow"
+    Width="800"
+    Height="450"
+    MaxWidth="1384"
+    MaxHeight="879"
+    AllowsTransparency="True"
+    Background="Transparent"
+    FontFamily="{DynamicResource MaterialDesignFont}"
+    ResizeMode="{Binding ResizeMode.Value}"
+    TextElement.FontSize="13"
+    TextElement.FontWeight="Regular"
+    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+    TextOptions.TextFormattingMode="Ideal"
+    TextOptions.TextRenderingMode="Auto"
+    Topmost="True"
+    WindowStyle="None"
+    mc:Ignorable="d">
+
+    <xb:Interaction.Behaviors>
+        <b:DragMoveBehavior IsCanMove="{Binding IsCanMove.Value}" />
+        <b:ScreenCoordinateBehavior
+            CaptureControl="{Binding ElementName=captureWindow}"
+            CaptureHeight="{Binding CaptureHeight.Value, Mode=OneWayToSource}"
+            CaptureWidth="{Binding CaptureWidth.Value, Mode=OneWayToSource}" />
+    </xb:Interaction.Behaviors>
+
+    <!--<Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisible" />
+    </Window.Resources>-->
+
+    <Window.DataContext>
+        <vm:MainViewModel />
+    </Window.DataContext>
+    <Border BorderBrush="Gray" BorderThickness="2">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Background="{DynamicResource MaterialDesignPaper}">
+                <StackPanel
+                    Width="30"
+                    Margin="0,5,5,5"
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal">
+                    <Button
+                        x:Name="buttonClose"
+                        Height="Auto"
+                        Margin="0,0,0,0"
+                        Command="{Binding CloseCommand}">
+                        <materialDesign:PackIcon
+                            Margin="-20"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Kind="CloseBold" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <Border
+                x:Name="rec_overlay"
+                Grid.Row="1"
+                Margin="0"
+                Panel.ZIndex="999"
+                Background="White"
+                BorderThickness="0"
+                Opacity="0.2"
+                Visibility="{Binding IsSaving.Value, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="30"
+                    FontWeight="ExtraBold"
+                    Foreground="Blue"
+                    Text="保存中..." />
+            </Border>
+
+            <DockPanel
+                Grid.Row="1"
+                Margin="0,0,0,0"
+                LastChildFill="True">
+                <Rectangle
+                    Width="48"
+                    VerticalAlignment="Stretch"
+                    DockPanel.Dock="Left"
+                    Fill="{DynamicResource MaterialDesignPaper}"
+                    StrokeThickness="0" />
+                <Rectangle
+                    Width="48"
+                    VerticalAlignment="Stretch"
+                    DockPanel.Dock="Right"
+                    Fill="{DynamicResource MaterialDesignPaper}"
+                    StrokeThickness="0" />
+                <Rectangle
+                    Height="18"
+                    HorizontalAlignment="Stretch"
+                    DockPanel.Dock="Top"
+                    Fill="{DynamicResource MaterialDesignPaper}"
+                    StrokeThickness="0" />
+                <Grid
+                    Height="98"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    Background="{DynamicResource MaterialDesignPaper}"
+                    DockPanel.Dock="Bottom">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Text="保存ファイル名" />
+                    <TextBox
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Height="30"
+                        Margin="10,0,0,0"
+                        HorizontalAlignment="Stretch"
+                        Text="{Binding SavePath.Value}"
+                        TextWrapping="NoWrap" />
+
+                    <StackPanel
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Width="250"
+                        HorizontalAlignment="Left"
+                        Orientation="Horizontal">
+                        <Slider
+                            x:Name="sliderFps"
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Width="160"
+                            Margin="10,14,0,15"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            IsSnapToTickEnabled="True"
+                            Maximum="60"
+                            Minimum="1"
+                            TickFrequency="1"
+                            Value="{Binding Fps.Value}" />
+                        <TextBox
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Width="40"
+                            Margin="10,10,0,10"
+                            Padding="-10"
+                            HorizontalAlignment="Left"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            FontSize="11"
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                            Text="{Binding Value, ElementName=sliderFps}" />
+                        <TextBlock
+                            Margin="5,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="fps" />
+                    </StackPanel>
+
+                    <StackPanel
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Width="120"
+                        Margin="250,0,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Stretch"
+                        Orientation="Horizontal">
+                        <TextBox
+                            Width="40"
+                            Margin="10,10,5,10"
+                            Padding="-10"
+                            HorizontalAlignment="Left"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            BorderBrush="DeepPink"
+                            FontSize="11"
+                            IsReadOnly="True"
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                            Text="{Binding CaptureWidth.Value, Mode=OneWay}" />
+                        <TextBlock VerticalAlignment="Center" Text="×" />
+                        <TextBox
+                            Width="40"
+                            Margin="5,10,0,10"
+                            Padding="-10"
+                            HorizontalAlignment="Left"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            BorderBrush="DeepPink"
+                            FontSize="11"
+                            IsReadOnly="True"
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                            Text="{Binding CaptureHeight.Value, Mode=OneWay}" />
+                    </StackPanel>
+
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Width="100"
+                        Margin="0,0,110,10"
+                        Padding="0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        HorizontalContentAlignment="Left"
+                        Command="{Binding StartRecordingCommand}"
+                        CommandParameter="{Binding ElementName=captureWindow}"
+                        Style="{StaticResource MaterialDesignFlatButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon
+                                Width="30"
+                                Height="30"
+                                Margin="0"
+                                Foreground="Red"
+                                Kind="Record" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource MaterialDesignDarkForeground}"
+                                Text="Record" />
+                        </StackPanel>
+                    </Button>
+
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Width="100"
+                        Margin="0,0,0,10"
+                        Padding="0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        HorizontalContentAlignment="Left"
+                        Command="{Binding StopRecordingCommand}"
+                        Style="{StaticResource MaterialDesignFlatButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon
+                                Width="30"
+                                Height="30"
+                                Margin="0"
+                                Foreground="Blue"
+                                Kind="Stop" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource MaterialDesignDarkForeground}"
+                                Text="Stop" />
+                        </StackPanel>
+                    </Button>
+                </Grid>
+                <Grid>
+                    <Border
+                        Margin="0,0,0,0"
+                        BorderBrush="DeepPink"
+                        BorderThickness="2">
+                        <Border
+                            x:Name="captureWindow"
+                            Margin="0,0,0,0"
+                            BorderThickness="0" />
+                    </Border>
+                </Grid>
+                <!--<Rectangle
+                    Height="50"
+                    HorizontalAlignment="Stretch"
+                    DockPanel.Dock="Bottom"
+                    Fill="#FFF4F4F5"
+                    StrokeThickness="0" />-->
+            </DockPanel>
+        </Grid>
+    </Border>
+</Window>

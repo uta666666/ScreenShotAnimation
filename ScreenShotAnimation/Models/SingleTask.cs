@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ScreenShotAnimation.Model
+namespace ScreenShotAnimation.Models
 {
     public class SingleTask
     {
