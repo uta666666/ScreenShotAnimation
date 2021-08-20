@@ -18,6 +18,8 @@ using ScreenShotAnimation.Models;
 using System.Diagnostics;
 using System.Threading;
 using Reactive.Bindings.Extensions;
+using Livet.Messaging;
+using Livet.Messaging.IO;
 
 namespace ScreenShotAnimation.ViewModels
 {
@@ -51,15 +53,18 @@ namespace ScreenShotAnimation.ViewModels
         public MainViewModel()
         {
             SavePath = new ReactiveProperty<string>();
-            IsCapturing = new ReactiveProperty<bool>();
-            IsSaving = new ReactiveProperty<bool>(false);
 
             CaptureWidth = new ReactiveProperty<double>();
             CaptureHeight = new ReactiveProperty<double>();
 
             ResizeMode = new ReactiveProperty<ResizeMode>(System.Windows.ResizeMode.CanResizeWithGrip);
-            IsCanMove = new ReactiveProperty<bool>(true);
+            IsCapturing = new ReactiveProperty<bool>(false);
+            IsSaving = new ReactiveProperty<bool>(false);
+            IsCanMove = IsCapturing.Select(x => !x).ToReactiveProperty();
+            IsTopMost = IsSaving.Select(x => !x).ToReactiveProperty();
+
             Fps = new ReactiveProperty<int>(15);
+
 
             //_images = new List<string>();
             //_images = new List<Bitmap>();
@@ -72,13 +77,22 @@ namespace ScreenShotAnimation.ViewModels
                 Application.Current.Shutdown();
             });
 
+            OpenSaveFileDialogCommand = new[] { IsCapturing, IsSaving }.CombineLatestValuesAreAllFalse().ToReactiveCommand();
+            OpenSaveFileDialogCommand.Subscribe(() =>
+            {
+                CallSaveFileDialog();
+            });
+
             //StartRecordingCommand = new ReactiveCommand<UIElement>();
             StartRecordingCommand = new[] { IsCapturing, IsSaving }.CombineLatestValuesAreAllFalse().ToReactiveCommand<UIElement>();
             StartRecordingCommand.Subscribe(async (UIElement x) =>
             {
                 if (string.IsNullOrWhiteSpace(SavePath.Value))
                 {
-                    return;
+                    if (!CallSaveFileDialog())
+                    {
+                        return;
+                    }
                 }
 
                 //ms
@@ -88,7 +102,7 @@ namespace ScreenShotAnimation.ViewModels
                 _animation = new Animation(_animationInterval);
 
                 ResizeMode.Value = System.Windows.ResizeMode.NoResize;
-                IsCanMove.Value = false;
+                //IsCanMove.Value = false;
                 IsCapturing.Value = true;
 
                 //_timer.Start();
@@ -102,10 +116,10 @@ namespace ScreenShotAnimation.ViewModels
             StopRecordingCommand.Subscribe(async () =>
             {
                 ResizeMode.Value = System.Windows.ResizeMode.CanResizeWithGrip;
-                IsCanMove.Value = true;
+                //IsCanMove.Value = true;
                 IsCapturing.Value = false;
-                IsSaving.Value = true;
 
+                IsSaving.Value = true;
                 try
                 {
                     // タイマーを止める
@@ -125,6 +139,18 @@ namespace ScreenShotAnimation.ViewModels
                     //}
                 }
             });
+        }
+
+        private bool CallSaveFileDialog()
+        {
+            var msg = new SavingFileSelectionMessage("SaveFileDialog");
+            Messenger.Raise(msg);
+            if (msg.Response == null || msg.Response.Length == 0)
+            {
+                return false;
+            }
+            SavePath.Value = msg.Response[0];
+            return true;
         }
 
 
@@ -304,6 +330,8 @@ namespace ScreenShotAnimation.ViewModels
 
         public ReactiveProperty<int> Fps { get; set; }
 
+        public ReactiveProperty<bool> IsTopMost { get; set; }
+
 
 
         public ReactiveCommand<UIElement> StartRecordingCommand { get; private set; }
@@ -311,5 +339,7 @@ namespace ScreenShotAnimation.ViewModels
         public ReactiveCommand StopRecordingCommand { get; private set; }
 
         public ReactiveCommand CloseCommand { get; private set; }
+
+        public ReactiveCommand OpenSaveFileDialogCommand { get; private set; }
     }
 }

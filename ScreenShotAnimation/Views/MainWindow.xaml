@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:b="clr-namespace:ScreenShotAnimation.Behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
     xmlns:local="clr-namespace:ScreenShotAnimation"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -12,8 +13,6 @@
     Title="MainWindow"
     Width="800"
     Height="450"
-    MaxWidth="1384"
-    MaxHeight="879"
     AllowsTransparency="True"
     Background="Transparent"
     FontFamily="{DynamicResource MaterialDesignFont}"
@@ -23,7 +22,7 @@
     TextElement.Foreground="{DynamicResource MaterialDesignBody}"
     TextOptions.TextFormattingMode="Ideal"
     TextOptions.TextRenderingMode="Auto"
-    Topmost="True"
+    Topmost="{Binding IsTopMost.Value, Mode=OneWay}"
     WindowStyle="None"
     mc:Ignorable="d">
 
@@ -92,19 +91,19 @@
                 Margin="0,0,0,0"
                 LastChildFill="True">
                 <Rectangle
-                    Width="48"
+                    Width="20"
                     VerticalAlignment="Stretch"
                     DockPanel.Dock="Left"
                     Fill="{DynamicResource MaterialDesignPaper}"
                     StrokeThickness="0" />
                 <Rectangle
-                    Width="48"
+                    Width="20"
                     VerticalAlignment="Stretch"
                     DockPanel.Dock="Right"
                     Fill="{DynamicResource MaterialDesignPaper}"
                     StrokeThickness="0" />
                 <Rectangle
-                    Height="18"
+                    Height="10"
                     HorizontalAlignment="Stretch"
                     DockPanel.Dock="Top"
                     Fill="{DynamicResource MaterialDesignPaper}"
@@ -123,65 +122,86 @@
 
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100" />
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="300*" />
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="200" />
                     </Grid.ColumnDefinitions>
 
                     <TextBlock
                         Grid.Row="0"
                         Grid.Column="0"
+                        Margin="0,17,0,16"
                         VerticalAlignment="Center"
                         Text="保存ファイル名" />
                     <TextBox
                         Grid.Row="0"
                         Grid.Column="1"
+                        Grid.ColumnSpan="3"
                         Height="30"
-                        Margin="10,0,0,0"
+                        Margin="10,10,50,9"
                         HorizontalAlignment="Stretch"
                         Text="{Binding SavePath.Value}"
                         TextWrapping="NoWrap" />
+                    <Button
+                        Grid.Row="0"
+                        Grid.Column="3"
+                        Width="50"
+                        Height="30"
+                        Margin="10,0,0,0"
+                        Padding="0"
+                        HorizontalAlignment="Right"
+                        Command="{Binding OpenSaveFileDialogCommand}"
+                        Style="{StaticResource MaterialDesignIconButton}">
+                        <materialDesign:PackIcon Kind="Folder" />
+                    </Button>
+
+                    <Grid
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        HorizontalAlignment="Right">
+                        <StackPanel
+                            Margin="0"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            Orientation="Horizontal">
+                            <Slider
+                                x:Name="sliderFps"
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Width="200"
+                                Margin="10,0,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                IsSnapToTickEnabled="True"
+                                Maximum="60"
+                                Minimum="1"
+                                TickFrequency="1"
+                                Value="{Binding Fps.Value}" />
+                            <TextBox
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Width="40"
+                                Margin="10,10,0,10"
+                                Padding="-10"
+                                HorizontalAlignment="Left"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center"
+                                FontSize="11"
+                                Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                Text="{Binding Value, ElementName=sliderFps}" />
+                            <TextBlock
+                                Margin="5,10,5,0"
+                                VerticalAlignment="Center"
+                                FontSize="10"
+                                Text="fps" />
+                        </StackPanel>
+                    </Grid>
 
                     <StackPanel
                         Grid.Row="1"
-                        Grid.Column="1"
-                        Width="250"
-                        HorizontalAlignment="Left"
-                        Orientation="Horizontal">
-                        <Slider
-                            x:Name="sliderFps"
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            Width="160"
-                            Margin="10,14,0,15"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            IsSnapToTickEnabled="True"
-                            Maximum="60"
-                            Minimum="1"
-                            TickFrequency="1"
-                            Value="{Binding Fps.Value}" />
-                        <TextBox
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            Width="40"
-                            Margin="10,10,0,10"
-                            Padding="-10"
-                            HorizontalAlignment="Left"
-                            HorizontalContentAlignment="Center"
-                            VerticalContentAlignment="Center"
-                            FontSize="11"
-                            Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                            Text="{Binding Value, ElementName=sliderFps}" />
-                        <TextBlock
-                            Margin="5,0,0,0"
-                            VerticalAlignment="Center"
-                            Text="fps" />
-                    </StackPanel>
-
-                    <StackPanel
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        Width="120"
-                        Margin="250,0,0,0"
+                        Grid.Column="2"
+                        Margin="0,0,0,0"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Stretch"
                         Orientation="Horizontal">
@@ -210,58 +230,67 @@
                             IsReadOnly="True"
                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                             Text="{Binding CaptureHeight.Value, Mode=OneWay}" />
+                        <TextBlock
+                            Margin="5,10,5,0"
+                            VerticalAlignment="Center"
+                            FontSize="10"
+                            Text="pixels" />
                     </StackPanel>
 
-                    <Button
+                    <Grid
                         Grid.Row="1"
-                        Grid.Column="1"
-                        Width="100"
-                        Margin="0,0,110,10"
-                        Padding="0"
+                        Grid.Column="3"
                         HorizontalAlignment="Right"
-                        VerticalAlignment="Bottom"
-                        HorizontalContentAlignment="Left"
-                        Command="{Binding StartRecordingCommand}"
-                        CommandParameter="{Binding ElementName=captureWindow}"
-                        Style="{StaticResource MaterialDesignFlatButton}">
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon
-                                Width="30"
-                                Height="30"
-                                Margin="0"
-                                Foreground="Red"
-                                Kind="Record" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource MaterialDesignDarkForeground}"
-                                Text="Record" />
-                        </StackPanel>
-                    </Button>
+                        VerticalAlignment="Stretch">
+                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                            <Button
+                                Width="80"
+                                Margin="0,0,0,0"
+                                Padding="0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                HorizontalContentAlignment="Left"
+                                Command="{Binding StartRecordingCommand}"
+                                CommandParameter="{Binding ElementName=captureWindow}"
+                                Style="{StaticResource MaterialDesignFlatButton}">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon
+                                        Width="30"
+                                        Height="30"
+                                        Margin="0"
+                                        Foreground="Red"
+                                        Kind="Record" />
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource MaterialDesignDarkForeground}"
+                                        Text="Record" />
+                                </StackPanel>
+                            </Button>
 
-                    <Button
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        Width="100"
-                        Margin="0,0,0,10"
-                        Padding="0"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Bottom"
-                        HorizontalContentAlignment="Left"
-                        Command="{Binding StopRecordingCommand}"
-                        Style="{StaticResource MaterialDesignFlatButton}">
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon
-                                Width="30"
-                                Height="30"
-                                Margin="0"
-                                Foreground="Blue"
-                                Kind="Stop" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource MaterialDesignDarkForeground}"
-                                Text="Stop" />
+                            <Button
+                                Width="80"
+                                Margin="10,0,0,0"
+                                Padding="0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Bottom"
+                                HorizontalContentAlignment="Left"
+                                Command="{Binding StopRecordingCommand}"
+                                Style="{StaticResource MaterialDesignFlatButton}">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon
+                                        Width="30"
+                                        Height="30"
+                                        Margin="0"
+                                        Foreground="Blue"
+                                        Kind="Stop" />
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource MaterialDesignDarkForeground}"
+                                        Text="Stop" />
+                                </StackPanel>
+                            </Button>
                         </StackPanel>
-                    </Button>
+                    </Grid>
                 </Grid>
                 <Grid>
                     <Border
@@ -280,6 +309,13 @@
                     DockPanel.Dock="Bottom"
                     Fill="#FFF4F4F5"
                     StrokeThickness="0" />-->
+
+                <xb:Interaction.Triggers>
+                    <l:InteractionMessageTrigger MessageKey="SaveFileDialog" Messenger="{Binding Messenger}">
+                        <l:SaveFileDialogInteractionMessageAction />
+                    </l:InteractionMessageTrigger>
+                </xb:Interaction.Triggers>
+
             </DockPanel>
         </Grid>
     </Border>
