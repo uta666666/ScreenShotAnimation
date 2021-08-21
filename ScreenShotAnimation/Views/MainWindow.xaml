@@ -23,6 +23,7 @@
     TextOptions.TextFormattingMode="Ideal"
     TextOptions.TextRenderingMode="Auto"
     Topmost="{Binding IsTopMost.Value, Mode=OneWay}"
+    WindowState="{Binding WindowState.Value}"
     WindowStyle="None"
     mc:Ignorable="d">
 
@@ -41,6 +42,7 @@
     <Window.DataContext>
         <vm:MainViewModel />
     </Window.DataContext>
+
     <Border BorderBrush="Gray" BorderThickness="2">
         <Grid>
             <Grid.RowDefinitions>
@@ -50,21 +52,25 @@
 
             <Grid Grid.Row="0" Background="{DynamicResource MaterialDesignPaper}">
                 <StackPanel
-                    Width="30"
-                    Margin="0,5,5,5"
+                    Margin="0,0,0,10"
                     HorizontalAlignment="Right"
                     Orientation="Horizontal">
                     <Button
-                        x:Name="buttonClose"
+                        x:Name="buttonMinimize"
+                        Width="40"
                         Height="Auto"
                         Margin="0,0,0,0"
-                        Command="{Binding CloseCommand}">
-                        <materialDesign:PackIcon
-                            Margin="-20"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Kind="CloseBold" />
-                    </Button>
+                        Command="{Binding MinimizeCommand}"
+                        Content="0"
+                        Style="{StaticResource CaptionButtonStyleKey}" />
+                    <Button
+                        x:Name="buttonClose"
+                        Width="40"
+                        Height="Auto"
+                        Margin="0,0,0,0"
+                        Command="{Binding CloseCommand}"
+                        Content="r"
+                        Style="{StaticResource CaptionCloseButtonStyleKey}" />
                 </StackPanel>
             </Grid>
 
@@ -91,25 +97,19 @@
                 Margin="0,0,0,0"
                 LastChildFill="True">
                 <Rectangle
-                    Width="20"
+                    Width="10"
                     VerticalAlignment="Stretch"
                     DockPanel.Dock="Left"
                     Fill="{DynamicResource MaterialDesignPaper}"
                     StrokeThickness="0" />
                 <Rectangle
-                    Width="20"
+                    Width="10"
                     VerticalAlignment="Stretch"
                     DockPanel.Dock="Right"
                     Fill="{DynamicResource MaterialDesignPaper}"
                     StrokeThickness="0" />
-                <Rectangle
-                    Height="10"
-                    HorizontalAlignment="Stretch"
-                    DockPanel.Dock="Top"
-                    Fill="{DynamicResource MaterialDesignPaper}"
-                    StrokeThickness="0" />
                 <Grid
-                    Height="98"
+                    Height="100"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
                     Background="{DynamicResource MaterialDesignPaper}"
@@ -169,7 +169,7 @@
                                 x:Name="sliderFps"
                                 Grid.Row="1"
                                 Grid.Column="1"
-                                Width="200"
+                                Width="150"
                                 Margin="10,0,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"
@@ -195,6 +195,7 @@
                                 VerticalAlignment="Center"
                                 FontSize="10"
                                 Text="fps" />
+                            <Separator Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                         </StackPanel>
                     </Grid>
 
@@ -212,7 +213,7 @@
                             HorizontalAlignment="Left"
                             HorizontalContentAlignment="Center"
                             VerticalContentAlignment="Center"
-                            BorderBrush="DeepPink"
+                            BorderBrush="Gray"
                             FontSize="11"
                             IsReadOnly="True"
                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
@@ -225,7 +226,7 @@
                             HorizontalAlignment="Left"
                             HorizontalContentAlignment="Center"
                             VerticalContentAlignment="Center"
-                            BorderBrush="DeepPink"
+                            BorderBrush="Gray"
                             FontSize="11"
                             IsReadOnly="True"
                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
@@ -234,7 +235,8 @@
                             Margin="5,10,5,0"
                             VerticalAlignment="Center"
                             FontSize="10"
-                            Text="pixels" />
+                            Text="px" />
+                        <Separator Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                     </StackPanel>
 
                     <Grid
@@ -295,7 +297,7 @@
                 <Grid>
                     <Border
                         Margin="0,0,0,0"
-                        BorderBrush="DeepPink"
+                        BorderBrush="Gray"
                         BorderThickness="2">
                         <Border
                             x:Name="captureWindow"
