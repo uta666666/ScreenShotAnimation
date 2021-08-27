@@ -129,10 +129,15 @@
     </ApplicationDefinition>
     <Compile Include="Behaviors\DragMoveBehavior.cs" />
     <Compile Include="Behaviors\ScreenCoordinateBehavior.cs" />
+    <Compile Include="Converters\RecordingToBrushConverter.cs" />
     <Compile Include="Models\Animation.cs" />
     <Compile Include="Models\SingleTask.cs" />
     <Compile Include="Util\NativeMethods.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\ProgressViewModel.cs" />
+    <Compile Include="Views\ProgressDialog.xaml.cs">
+      <DependentUpon>ProgressDialog.xaml</DependentUpon>
+    </Compile>
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -145,6 +150,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\ProgressDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -173,9 +182,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Converters\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="myscreen_256.ico" />
   </ItemGroup>

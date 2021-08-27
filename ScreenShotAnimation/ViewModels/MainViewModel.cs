@@ -20,6 +20,7 @@ using System.Threading;
 using Reactive.Bindings.Extensions;
 using Livet.Messaging;
 using Livet.Messaging.IO;
+using MaterialDesignThemes.Wpf;
 
 namespace ScreenShotAnimation.ViewModels
 {
@@ -52,18 +53,20 @@ namespace ScreenShotAnimation.ViewModels
         public MainViewModel()
         {
             WindowState = new ReactiveProperty<WindowState>(System.Windows.WindowState.Normal);
-            SavePath = new ReactiveProperty<string>();
+            ResizeMode = new ReactiveProperty<ResizeMode>(System.Windows.ResizeMode.CanResizeWithGrip);
 
+            SavePath = new ReactiveProperty<string>();
             CaptureWidth = new ReactiveProperty<double>();
             CaptureHeight = new ReactiveProperty<double>();
+            Fps = new ReactiveProperty<int>(15);
 
-            ResizeMode = new ReactiveProperty<ResizeMode>(System.Windows.ResizeMode.CanResizeWithGrip);
-            IsCapturing = new ReactiveProperty<bool>(false);
+            IsRecording = new ReactiveProperty<bool>(false);
             IsSaving = new ReactiveProperty<bool>(false);
-            IsCanMove = IsCapturing.Select(x => !x).ToReactiveProperty();
+            IsCanMove = IsRecording.Select(x => !x).ToReactiveProperty();
             IsTopMost = IsSaving.Select(x => !x).ToReactiveProperty();
 
-            Fps = new ReactiveProperty<int>(15);
+            ProgDialogVM = new ReactiveProperty<ProgressViewModel>();
+            SnackBarMessageQueue = new SnackbarMessageQueue();
 
 
 
@@ -74,21 +77,21 @@ namespace ScreenShotAnimation.ViewModels
             });
 
 
-            MinimizeCommand = IsCapturing.Select(x => !x).ToReactiveCommand();
+            MinimizeCommand = IsRecording.Select(x => !x).ToReactiveCommand();
             MinimizeCommand.Subscribe(() =>
             {
                 WindowState.Value = System.Windows.WindowState.Minimized;
             });
 
 
-            OpenSaveFileDialogCommand = new[] { IsCapturing, IsSaving }.CombineLatestValuesAreAllFalse().ToReactiveCommand();
+            OpenSaveFileDialogCommand = new[] { IsRecording, IsSaving }.CombineLatestValuesAreAllFalse().ToReactiveCommand();
             OpenSaveFileDialogCommand.Subscribe(() =>
             {
                 CallSaveFileDialog();
             });
 
             
-            StartRecordingCommand = new[] { IsCapturing, IsSaving }.CombineLatestValuesAreAllFalse().ToReactiveCommand<UIElement>();
+            StartRecordingCommand = new[] { IsRecording, IsSaving }.CombineLatestValuesAreAllFalse().ToReactiveCommand<UIElement>();
             StartRecordingCommand.Subscribe(async (UIElement x) =>
             {
                 if (string.IsNullOrWhiteSpace(SavePath.Value))
@@ -106,7 +109,7 @@ namespace ScreenShotAnimation.ViewModels
                 _animation = new Animation(_animationInterval);
 
                 ResizeMode.Value = System.Windows.ResizeMode.NoResize;
-                IsCapturing.Value = true;
+                IsRecording.Value = true;
 
                 _tokenSoruce = new CancellationTokenSource();
                 var token = _tokenSoruce.Token;
@@ -114,13 +117,13 @@ namespace ScreenShotAnimation.ViewModels
             });
 
 
-            StopRecordingCommand = IsCapturing.ToReactiveCommand();
+            StopRecordingCommand = IsRecording.ToReactiveCommand();
             StopRecordingCommand.Subscribe(async () =>
             {
                 ResizeMode.Value = System.Windows.ResizeMode.CanResizeWithGrip;
-                IsCapturing.Value = false;
+                IsRecording.Value = false;
 
-                IsSaving.Value = true;
+                ShowProgress("保存中...");
                 try
                 {
                     _tokenSoruce.Cancel();
@@ -128,6 +131,8 @@ namespace ScreenShotAnimation.ViewModels
                     // 動作中のタスクがあれば待つ
                     await Task.WhenAll(_tasks.ToArray());
                     await _animation.WriteAnimationGIFAsync(SavePath.Value);
+
+                    ShowSaveCompletedMessage();
                 }
                 finally
                 {
@@ -151,6 +156,39 @@ namespace ScreenShotAnimation.ViewModels
             }
             SavePath.Value = msg.Response[0];
             return true;
+        }
+
+        /// <summary>
+        /// 処理中を表示
+        /// </summary>
+        /// <param name="message"></param>
+        private void ShowProgress(string message)
+        {
+            ProgDialogVM.Value = new ProgressViewModel(message);
+            IsSaving.Value = true;
+        }
+
+        /// <summary>
+        /// 保存完了のメッセージ
+        /// </summary>
+        private void ShowSaveCompletedMessage()
+        {
+            var actionHandler = new Action<object>(_ => { Process.Start(SavePath.Value); });
+            ShowInfoMessage("ファイルの保存が完了しました。", "開く", actionHandler);
+        }
+
+        /// <summary>
+        /// メッセージを表示
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="actionContent"></param>
+        /// <param name="actionHandler"></param>
+        private void ShowInfoMessage(string text, string actionContent = null, Action<object> actionHandler = null)
+        {
+            //var msg = new InformationMessage(text, caption, MessageBoxImage.Information, "MessageDialog");
+            //Messenger.Raise(msg);
+            
+            SnackBarMessageQueue.Enqueue(text, actionContent, actionHandler, null, false, true, TimeSpan.FromSeconds(5));
         }
 
 
@@ -188,7 +226,7 @@ namespace ScreenShotAnimation.ViewModels
 
         public ReactiveProperty<string> SavePath { get; set; }
 
-        public ReactiveProperty<bool> IsCapturing { get; set; }
+        public ReactiveProperty<bool> IsRecording { get; set; }
 
         public ReactiveProperty<bool> IsSaving { get; set; }
 
@@ -205,6 +243,10 @@ namespace ScreenShotAnimation.ViewModels
         public ReactiveProperty<bool> IsTopMost { get; set; }
 
         public ReactiveProperty<WindowState> WindowState { get; set; }
+
+        public ReactiveProperty<ProgressViewModel> ProgDialogVM { get; set; }
+
+        public SnackbarMessageQueue SnackBarMessageQueue { get; private set; }
 
 
 
