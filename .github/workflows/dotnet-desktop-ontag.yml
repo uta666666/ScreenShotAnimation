@@ -74,7 +74,7 @@ jobs:
       
     - name: build 
       run: |
-        dotnet publish ScreenShotAnimation.Core/ScreenShotAnimation.Core.csproj -c Release -r win-x64 -o ./App-win-x64
+        dotnet publish ScreenShotAnimation.Core/ScreenShotAnimation.Core.csproj -c Release -o ./App-win-x64
         7z a -tzip ./App-win-x64.zip ./App-win-x64/*
       
     - name: Create Release
