@@ -78,18 +78,29 @@
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0" Background="{DynamicResource MaterialDesignPaper}">
-                <Label
-                    Margin="10,0,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
-                    FontWeight="Bold"
-                    Foreground="Red"
-                    Visibility="{Binding IsRecording.Value, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Record" />
-                        <TextBlock Text="REC" />
-                    </StackPanel>
-                </Label>
+                <StackPanel
+                    Margin="0,0,100,0"
+                    HorizontalAlignment="Stretch"
+                    Orientation="Horizontal">
+                    <Label
+                        Margin="10,0,10,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        FontWeight="Bold"
+                        Foreground="Red"
+                        Visibility="{Binding IsRecording.Value, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Record" />
+                            <TextBlock Text="REC" />
+                        </StackPanel>
+                    </Label>
+                    <Label
+                        Margin="10,0,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Content="{Binding SavePath.Value}"
+                        Visibility="{Binding IsProcessing.Value, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                </StackPanel>
 
                 <StackPanel
                     Margin="0,0,0,10"
@@ -113,26 +124,6 @@
                         Style="{StaticResource CaptionCloseButtonStyleKey}" />
                 </StackPanel>
             </Grid>
-
-            <!--<Border
-                x:Name="rec_overlay"
-                Grid.Row="1"
-                Margin="0"
-                Panel.ZIndex="999"
-                Background="White"
-                BorderThickness="0"
-                Opacity="0.4"
-                Visibility="{Binding IsSaving.Value, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Label
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Background="White"
-                    Content="保存中..."
-                    FontSize="30"
-                    FontWeight="ExtraBold"
-                    Foreground="Blue"
-                    Opacity="1" />
-            </Border>-->
 
             <materialDesign:DialogHost
                 Grid.Row="1"
@@ -158,14 +149,15 @@
                     Fill="{DynamicResource MaterialDesignPaper}"
                     StrokeThickness="0" />
                 <Grid
-                    Height="100"
+                    Height="50"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
                     Background="{DynamicResource MaterialDesignPaper}"
                     DockPanel.Dock="Bottom">
 
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
+                        <!--  とりあえず０にしておく  -->
+                        <RowDefinition Height="0" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 

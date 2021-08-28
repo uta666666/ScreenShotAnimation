@@ -87,12 +87,9 @@ namespace ScreenShotAnimation.ViewModels
             StartRecordingCommand = new[] { IsRecording, IsSaving }.CombineLatestValuesAreAllFalse().ToReactiveCommand<UIElement>();
             StartRecordingCommand.Subscribe(async (UIElement x) =>
             {
-                if (string.IsNullOrWhiteSpace(SavePath.Value))
+                if (!CallSaveFileDialog())
                 {
-                    if (!CallSaveFileDialog())
-                    {
-                        return;
-                    }
+                    return;
                 }
 
                 //ms
