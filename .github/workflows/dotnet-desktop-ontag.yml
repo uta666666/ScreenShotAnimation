@@ -71,9 +71,8 @@ jobs:
       
     - name: build 
       run: |
-        release_name="App-win-x64"
-        dotnet publish ScreenShotAnimation.Core/ScreenShotAnimation.Core.csproj  -c Release -r win-x64 /p\:PublishSingleFile=true /p\:PublishTrimmed=true -o "${release_name}"
-        7z a -tzip "${release_name}.zip" "./${release_name}/*"
+        dotnet publish ScreenShotAnimation.Core/ScreenShotAnimation.Core.csproj  -c Release -r win-x64 /p\:PublishSingleFile=true /p\:PublishTrimmed=true -o App-win-x64
+        7z a -tzip App-win-x64.zip ./App-win-x64/*
       
     - name: Create Release
       id: create_release
