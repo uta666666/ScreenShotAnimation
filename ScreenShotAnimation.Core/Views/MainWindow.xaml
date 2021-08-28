@@ -34,10 +34,14 @@
     </Window.DataContext>
 
     <Window.Resources>
+        <!--  Converter  -->
         <cv:RecordingToBrushConverter x:Key="RecToBrushConverter" />
-
+        <!--  Dialog用Template  -->
         <DataTemplate DataType="{x:Type vm:ProgressViewModel}">
             <v:ProgressWindow />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:MessageViewModel}">
+            <v:MessageWindow />
         </DataTemplate>
     </Window.Resources>
 
@@ -55,10 +59,16 @@
         <l:InteractionMessageTrigger MessageKey="SaveFileDialog" Messenger="{Binding Messenger}">
             <l:SaveFileDialogInteractionMessageAction />
         </l:InteractionMessageTrigger>
-        <l:InteractionMessageTrigger MessageKey="MessageDialog" Messenger="{Binding Messenger}">
-            <l:InformationDialogInteractionMessageAction />
-        </l:InteractionMessageTrigger>
     </xb:Interaction.Triggers>
+
+    <!--  ショートカットキー  -->
+    <Window.InputBindings>
+        <KeyBinding
+            Command="{Binding StartRecordingCommand}"
+            CommandParameter="{Binding ElementName=captureWindow}"
+            Gesture="F11" />
+        <KeyBinding Command="{Binding StopRecordingCommand}" Gesture="F12" />
+    </Window.InputBindings>
 
     <Border BorderBrush="Gray" BorderThickness="2">
         <Grid>
@@ -128,7 +138,7 @@
                 Grid.Row="1"
                 DialogContent="{Binding ProgDialogVM.Value}"
                 DialogTheme="Inherit"
-                IsOpen="{Binding IsSaving.Value}"
+                IsOpen="{Binding IsShowDialog.Value}"
                 OverlayBackground="{DynamicResource PrimaryHueDarkBrush}" />
 
             <DockPanel
@@ -162,8 +172,8 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100" />
                         <ColumnDefinition Width="300*" />
-                        <ColumnDefinition Width="150" />
-                        <ColumnDefinition Width="200" />
+                        <ColumnDefinition Width="140" />
+                        <ColumnDefinition Width="220" />
                     </Grid.ColumnDefinitions>
 
                     <TextBlock
@@ -178,7 +188,7 @@
                         Grid.ColumnSpan="3"
                         Margin="10,0,0,0"
                         HorizontalAlignment="Stretch"
-                        IsEnabled="{Binding IsRecording.Value, Converter={StaticResource InvertBooleanConverter}}">
+                        IsEnabled="{Binding IsProcessing.Value, Converter={StaticResource InvertBooleanConverter}}">
                         <TextBox
                             Height="30"
                             Margin="0,0,60,0"
@@ -203,12 +213,13 @@
                         Grid.Row="1"
                         Grid.Column="0"
                         Grid.ColumnSpan="2"
+                        Margin="0,0,10,0"
                         HorizontalAlignment="Right">
                         <StackPanel
                             Margin="0"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
-                            IsEnabled="{Binding IsRecording.Value, Converter={StaticResource InvertBooleanConverter}}"
+                            IsEnabled="{Binding IsProcessing.Value, Converter={StaticResource InvertBooleanConverter}}"
                             Orientation="Horizontal">
                             <Slider
                                 x:Name="sliderFps"
@@ -240,7 +251,6 @@
                                 VerticalAlignment="Center"
                                 FontSize="10"
                                 Text="fps" />
-                            <Separator Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                         </StackPanel>
                     </Grid>
 
@@ -250,7 +260,12 @@
                         Margin="0,0,0,0"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Stretch"
+                        IsEnabled="{Binding IsProcessing.Value, Converter={StaticResource InvertBooleanConverter}}"
                         Orientation="Horizontal">
+                        <Separator
+                            Width="1"
+                            Margin="0,0,0,5"
+                            Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                         <TextBox
                             Width="40"
                             Margin="10,10,5,10"
@@ -281,7 +296,6 @@
                             VerticalAlignment="Center"
                             FontSize="10"
                             Text="px" />
-                        <Separator Width="1" Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                     </StackPanel>
 
                     <Grid
@@ -289,13 +303,17 @@
                         Grid.Column="3"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Stretch">
-                        <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                        <StackPanel VerticalAlignment="Stretch" Orientation="Horizontal">
+                            <Separator
+                                Width="1"
+                                Margin="0,0,0,5"
+                                Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
                             <Button
-                                Width="80"
-                                Margin="0,0,0,0"
+                                Width="100"
+                                Margin="10,0,0,0"
                                 Padding="0"
                                 HorizontalAlignment="Right"
-                                VerticalAlignment="Bottom"
+                                VerticalAlignment="Center"
                                 HorizontalContentAlignment="Left"
                                 Command="{Binding StartRecordingCommand}"
                                 CommandParameter="{Binding ElementName=captureWindow}"
@@ -310,16 +328,22 @@
                                     <TextBlock
                                         VerticalAlignment="Center"
                                         Foreground="{DynamicResource MaterialDesignDarkForeground}"
-                                        Text="Record" />
+                                        Text="Rec" />
+                                    <TextBlock
+                                        Margin="3,0,0,5"
+                                        VerticalAlignment="Bottom"
+                                        FontSize="10"
+                                        Foreground="{DynamicResource MaterialDesignDarkForeground}"
+                                        Text="(F11)" />
                                 </StackPanel>
                             </Button>
 
                             <Button
-                                Width="80"
+                                Width="100"
                                 Margin="10,0,0,0"
                                 Padding="0"
                                 HorizontalAlignment="Right"
-                                VerticalAlignment="Bottom"
+                                VerticalAlignment="Center"
                                 HorizontalContentAlignment="Left"
                                 materialDesign:ButtonProgressAssist.IsIndeterminate="True"
                                 Command="{Binding StopRecordingCommand}"
@@ -335,6 +359,12 @@
                                         VerticalAlignment="Center"
                                         Foreground="{DynamicResource MaterialDesignDarkForeground}"
                                         Text="Stop" />
+                                    <TextBlock
+                                        Margin="3,0,0,5"
+                                        VerticalAlignment="Bottom"
+                                        FontSize="10"
+                                        Foreground="{DynamicResource MaterialDesignDarkForeground}"
+                                        Text="(F12)" />
                                 </StackPanel>
                             </Button>
                         </StackPanel>

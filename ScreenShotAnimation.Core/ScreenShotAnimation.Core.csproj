@@ -46,10 +46,4 @@
     <Resource Include="myscreen_256.ico" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Page Update="Views\ProgressDialog.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-
 </Project>

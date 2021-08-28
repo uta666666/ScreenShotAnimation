@@ -203,7 +203,7 @@ namespace ScreenShotAnimation.ViewModels
             {
                 Stopwatch sw = new Stopwatch();
                 //キャンセルされるまで繰り返す
-                while (token != null && !token.IsCancellationRequested)
+                while (!token.IsCancellationRequested)
                 {
                     sw.Start();
 
