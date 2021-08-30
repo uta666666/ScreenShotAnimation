@@ -29,6 +29,12 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
+        
+    - name: setup nuget
+      uses: warrenbuckley/Setup-Nuget@v1
+      
+    - name: restore nuget 
+      run: nuget restore ScreenShotAnimation/ScreenShotAnimation.csproj
      
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.2
