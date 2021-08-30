@@ -33,10 +33,18 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.2
       
-    - name: build 
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.2
+      
+    - name: build core 
       run: |
         dotnet publish ScreenShotAnimation.Core/ScreenShotAnimation.Core.csproj -c Release -r win-x64 --self-contained false -o ./App-win-x64
         7z a -tzip ./App-win-x64.zip ./App-win-x64/*
+        
+    - name: Build Solution
+      run: |
+        msbuild.exe ScreenShotAnimation/ScreenShotAnimation.csproj /p:configuration="Release"
+        7z a -tzip ./App-win-x64-framework.zip ./ScreenShotAnimation/bin/Release/*
       
     - name: Create Release
       id: create_release
@@ -58,6 +66,17 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./App-win-x64.zip
         asset_name: App-win-x64.zip
+        asset_content_type: application/zip
+        
+    - name: Upload Release Asset2
+      id: upload_release_asset2 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./App-win-x64-framework.zip
+        asset_name: App-win-x64-framework.zip
         asset_content_type: application/zip
 
 
