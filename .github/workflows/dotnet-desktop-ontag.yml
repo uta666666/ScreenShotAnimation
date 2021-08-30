@@ -33,9 +33,6 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.2
       
-    - name: Setup NuGet
-      uses: NuGet/setup-nuget@v1.0.2
-      
     - name: build core 
       run: |
         dotnet publish ScreenShotAnimation.Core/ScreenShotAnimation.Core.csproj -c Release -r win-x64 --self-contained false -o ./App-win-x64
