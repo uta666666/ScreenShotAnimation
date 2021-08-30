@@ -6,6 +6,7 @@
     <UseWPF>true</UseWPF>
     <RootNamespace>ScreenShotAnimation</RootNamespace>
     <ApplicationIcon>myscreen_256.ico</ApplicationIcon>
+    <NeutralLanguage>ja-JP</NeutralLanguage>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

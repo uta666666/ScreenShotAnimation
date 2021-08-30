@@ -123,9 +123,9 @@ namespace ScreenShotAnimation.Models
                     NativeMethods.DeleteObject(cursorInfo.hCursor);
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                //LogWriter.Log(e, "Impossible to get the cursor");
+                _ = LogWriter.ErrorAsync(ex);
             }
 
             #endregion

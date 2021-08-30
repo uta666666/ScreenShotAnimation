@@ -28,20 +28,11 @@ namespace ScreenShotAnimation.ViewModels
     {
         #region フィールド変数
 
-        private readonly DispatcherTimer _timer = new DispatcherTimer();
         //ms
         private int _animationInterval;
-
         private readonly List<Task> _tasks = new List<Task>();
-        //private readonly SingleTask _tasks = new SingleTask();
-
-        private GifBitmapEncoder _encoder = new GifBitmapEncoder();
-
-        //private object _lockobj = new object();
-
         private System.Windows.Point _capturePoint;
         private Animation _animation;
-
         private CancellationTokenSource _tokenSoruce;
 
         #endregion フィールド変数
@@ -62,10 +53,12 @@ namespace ScreenShotAnimation.ViewModels
 
             IsRecording = new ReactiveProperty<bool>(false);
             IsSaving = new ReactiveProperty<bool>(false);
+            IsProcessing = IsRecording.CombineLatest(IsSaving, (x, y) => x || y).ToReadOnlyReactiveProperty();
             IsCanMove = IsRecording.Select(x => !x).ToReactiveProperty();
             IsTopMost = IsSaving.Select(x => !x).ToReactiveProperty();
 
-            ProgDialogVM = new ReactiveProperty<ProgressViewModel>();
+            IsShowDialog = new ReactiveProperty<bool>();
+            ProgDialogVM = new ReactiveProperty<Livet.ViewModel>();
             SnackBarMessageQueue = new SnackbarMessageQueue();
 
 
@@ -94,12 +87,9 @@ namespace ScreenShotAnimation.ViewModels
             StartRecordingCommand = new[] { IsRecording, IsSaving }.CombineLatestValuesAreAllFalse().ToReactiveCommand<UIElement>();
             StartRecordingCommand.Subscribe(async (UIElement x) =>
             {
-                if (string.IsNullOrWhiteSpace(SavePath.Value))
+                if (!CallSaveFileDialog())
                 {
-                    if (!CallSaveFileDialog())
-                    {
-                        return;
-                    }
+                    return;
                 }
 
                 //ms
@@ -122,6 +112,7 @@ namespace ScreenShotAnimation.ViewModels
             {
                 ResizeMode.Value = System.Windows.ResizeMode.CanResizeWithGrip;
                 IsRecording.Value = false;
+                IsSaving.Value = true;
 
                 ShowProgress("保存中...");
                 try
@@ -131,13 +122,14 @@ namespace ScreenShotAnimation.ViewModels
                     // 動作中のタスクがあれば待つ
                     await Task.WhenAll(_tasks.ToArray());
                     await _animation.WriteAnimationGIFAsync(SavePath.Value);
-
-                    ShowSaveCompletedMessage();
                 }
                 finally
                 {
                     IsSaving.Value = false;
+                    CloseProgress();
                 }
+
+                ShowSaveCompletedMessage();
             });
         }
 
@@ -165,7 +157,15 @@ namespace ScreenShotAnimation.ViewModels
         private void ShowProgress(string message)
         {
             ProgDialogVM.Value = new ProgressViewModel(message);
-            IsSaving.Value = true;
+            IsShowDialog.Value = true;
+        }
+
+        /// <summary>
+        /// 処理中を閉じる
+        /// </summary>
+        private void CloseProgress()
+        {
+            IsShowDialog.Value = false;
         }
 
         /// <summary>
@@ -173,8 +173,26 @@ namespace ScreenShotAnimation.ViewModels
         /// </summary>
         private void ShowSaveCompletedMessage()
         {
-            var actionHandler = new Action<object>(_ => { Process.Start(SavePath.Value); });
-            ShowInfoMessage("ファイルの保存が完了しました。", "開く", actionHandler);
+            var actionHandler = new Action<object>(_ => { Process.Start(new ProcessStartInfo(SavePath.Value) { UseShellExecute = true }); });
+            ShowSnackBar("ファイルの保存が完了しました。", "開く", actionHandler);
+
+            //var messageVM = new MessageViewModel("Completed", "ファイルを保存しました。", "OK", "開く");
+            //ProgDialogVM.Value = messageVM;
+            //IsShowDialog.Value = true;
+
+            //messageVM.ReturnType.Where(x => x != MessageViewReturnType.None).Subscribe(t =>
+            //{
+            //    switch (t)
+            //    {
+            //        case MessageViewReturnType.Button2:
+            //            IsShowDialog.Value = false;
+            //            Process.Start(new ProcessStartInfo(SavePath.Value) { UseShellExecute = true });
+            //            break;
+            //        default:
+            //            IsShowDialog.Value = false;
+            //            break;
+            //    }
+            //});
         }
 
         /// <summary>
@@ -183,11 +201,8 @@ namespace ScreenShotAnimation.ViewModels
         /// <param name="text"></param>
         /// <param name="actionContent"></param>
         /// <param name="actionHandler"></param>
-        private void ShowInfoMessage(string text, string actionContent = null, Action<object> actionHandler = null)
+        private void ShowSnackBar(string text, string actionContent = null, Action<object> actionHandler = null)
         {
-            //var msg = new InformationMessage(text, caption, MessageBoxImage.Information, "MessageDialog");
-            //Messenger.Raise(msg);
-            
             SnackBarMessageQueue.Enqueue(text, actionContent, actionHandler, null, false, true, TimeSpan.FromSeconds(5));
         }
 
@@ -223,12 +238,15 @@ namespace ScreenShotAnimation.ViewModels
         }
 
 
+        #region Command
 
         public ReactiveProperty<string> SavePath { get; set; }
 
         public ReactiveProperty<bool> IsRecording { get; set; }
 
         public ReactiveProperty<bool> IsSaving { get; set; }
+
+        public ReadOnlyReactiveProperty<bool> IsProcessing { get; set; }
 
         public ReactiveProperty<double> CaptureWidth { get; set; }
 
@@ -244,11 +262,15 @@ namespace ScreenShotAnimation.ViewModels
 
         public ReactiveProperty<WindowState> WindowState { get; set; }
 
-        public ReactiveProperty<ProgressViewModel> ProgDialogVM { get; set; }
+        public ReactiveProperty<bool> IsShowDialog { get; set; }
+
+        public ReactiveProperty<Livet.ViewModel> ProgDialogVM { get; set; }
 
         public SnackbarMessageQueue SnackBarMessageQueue { get; private set; }
 
+        #endregion Command
 
+        #region Property
 
         public ReactiveCommand<UIElement> StartRecordingCommand { get; private set; }
 
@@ -259,5 +281,7 @@ namespace ScreenShotAnimation.ViewModels
         public ReactiveCommand MinimizeCommand { get; private set; }
 
         public ReactiveCommand OpenSaveFileDialogCommand { get; private set; }
+
+        #endregion Command
     }
 }

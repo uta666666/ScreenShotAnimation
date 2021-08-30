@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace ScreenShotAnimation.Views
 {
     /// <summary>
-    /// ProgressDialog.xaml の相互作用ロジック
+    /// MessageWindow.xaml の相互作用ロジック
     /// </summary>
-    public partial class ProgressDialog : UserControl
+    public partial class MessageWindow : UserControl
     {
-        public ProgressDialog()
+        public MessageWindow()
         {
             InitializeComponent();
         }
