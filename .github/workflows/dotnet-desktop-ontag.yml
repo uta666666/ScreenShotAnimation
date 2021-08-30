@@ -31,7 +31,10 @@ jobs:
         dotnet-version: 5.0.x
         
     - name: setup nuget
-      uses: warrenbuckley/Setup-Nuget@v1
+      uses: nuget/setup-nuget@v1
+      with:
+        nuget-api-key: ${{ secrets.NuGetAPIKey }}
+        nuget-version: 'latest'
       
     - name: restore nuget 
       run: nuget restore ScreenShotAnimation/ScreenShotAnimation.csproj
