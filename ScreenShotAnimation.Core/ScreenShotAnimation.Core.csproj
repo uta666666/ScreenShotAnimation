@@ -15,6 +15,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\**" />
+    <Compile Remove="Util\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <EmbeddedResource Remove="Util\**" />
+    <None Remove="Models\**" />
+    <None Remove="Util\**" />
+    <Page Remove="Models\**" />
+    <Page Remove="Util\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="myscreen_256.ico" />
   </ItemGroup>
 
@@ -41,6 +52,10 @@
     <PackageReference Include="System.Runtime.InteropServices.WindowsRuntime" Version="4.3.0" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ScreenShotAnimationClassLibrary\ScreenShotAnimationClassLibrary.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -55,6 +55,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>myscreen_256.ico</ApplicationIcon>
@@ -130,6 +131,9 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Common, Version=4.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Drawing.Common.5.0.2\lib\net461\System.Drawing.Common.dll</HintPath>
+    </Reference>
     <Reference Include="System.Reactive, Version=5.0.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Reactive.5.0.0\lib\netstandard2.0\System.Reactive.dll</HintPath>
     </Reference>
@@ -165,10 +169,6 @@
     <Compile Include="Behaviors\DragMoveBehavior.cs" />
     <Compile Include="Behaviors\ScreenCoordinateBehavior.cs" />
     <Compile Include="Converters\RecordingToBrushConverter.cs" />
-    <Compile Include="Models\Animation.cs" />
-    <Compile Include="Models\SingleTask.cs" />
-    <Compile Include="Util\LogWriter.cs" />
-    <Compile Include="Util\NativeMethods.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\MessageViewModel.cs" />
     <Compile Include="ViewModels\ProgressViewModel.cs" />
@@ -223,7 +223,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="ScreenShotAnimation_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -242,6 +241,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="myscreen_256.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ScreenShotAnimationClassLibrary\ScreenShotAnimationClassLibrary.csproj">
+      <Project>{ef9001b2-4385-430f-962f-36098e9ecb3b}</Project>
+      <Name>ScreenShotAnimationClassLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\MaterialDesignThemes.4.1.0\build\MaterialDesignThemes.targets" Condition="Exists('..\packages\MaterialDesignThemes.4.1.0\build\MaterialDesignThemes.targets')" />

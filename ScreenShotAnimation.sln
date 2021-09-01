@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenShotAnimation", "Scre
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScreenShotAnimation.Core", "ScreenShotAnimation.Core\ScreenShotAnimation.Core.csproj", "{24AC9C86-672E-40A9-8A21-1903781E958F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScreenShotAnimationClassLibrary", "ScreenShotAnimationClassLibrary\ScreenShotAnimationClassLibrary.csproj", "{EF9001B2-4385-430F-962F-36098E9ECB3B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -16,10 +18,15 @@ Global
 		{DA88CB57-0ED3-4A73-9D53-C30376BC7A6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DA88CB57-0ED3-4A73-9D53-C30376BC7A6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA88CB57-0ED3-4A73-9D53-C30376BC7A6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA88CB57-0ED3-4A73-9D53-C30376BC7A6D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{24AC9C86-672E-40A9-8A21-1903781E958F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{24AC9C86-672E-40A9-8A21-1903781E958F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24AC9C86-672E-40A9-8A21-1903781E958F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24AC9C86-672E-40A9-8A21-1903781E958F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF9001B2-4385-430F-962F-36098E9ECB3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF9001B2-4385-430F-962F-36098E9ECB3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF9001B2-4385-430F-962F-36098E9ECB3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF9001B2-4385-430F-962F-36098E9ECB3B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

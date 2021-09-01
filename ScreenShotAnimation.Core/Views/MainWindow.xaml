@@ -51,7 +51,9 @@
         <b:ScreenCoordinateBehavior
             CaptureControl="{Binding ElementName=captureWindow}"
             CaptureHeight="{Binding CaptureHeight.Value, Mode=OneWayToSource}"
-            CaptureWidth="{Binding CaptureWidth.Value, Mode=OneWayToSource}" />
+            CaptureWidth="{Binding CaptureWidth.Value, Mode=OneWayToSource}"
+            CapturePointX="{Binding CapturePointX.Value, Mode=OneWayToSource}"
+            CapturePointY="{Binding CapturePointY.Value, Mode=OneWayToSource}"/>
     </xb:Interaction.Behaviors>
 
     <!--  Dialog 表示  -->

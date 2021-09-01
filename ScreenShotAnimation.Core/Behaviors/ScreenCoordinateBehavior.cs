@@ -35,6 +35,30 @@ namespace ScreenShotAnimation.Behaviors
             }
         }
 
+        public double CapturePointX
+        {
+            get
+            {
+                return (double)GetValue(CapturePointXProperty);
+            }
+            set
+            {
+                SetValue(CapturePointXProperty, value);
+            }
+        }
+
+        public double CapturePointY
+        {
+            get
+            {
+                return (double)GetValue(CapturePointYProperty);
+            }
+            set
+            {
+                SetValue(CapturePointYProperty, value);
+            }
+        }
+
         public Border CaptureControl
         {
             get
@@ -50,6 +74,8 @@ namespace ScreenShotAnimation.Behaviors
 
         public static readonly DependencyProperty CaptureWidthProperty = DependencyProperty.Register(nameof(CaptureWidth), typeof(double), typeof(ScreenCoordinateBehavior), new PropertyMetadata(null));
         public static readonly DependencyProperty CaptreuHeightProperty = DependencyProperty.Register(nameof(CaptureHeight), typeof(double), typeof(ScreenCoordinateBehavior), new PropertyMetadata(null));
+        public static readonly DependencyProperty CapturePointXProperty = DependencyProperty.Register(nameof(CapturePointX), typeof(double), typeof(ScreenCoordinateBehavior), new PropertyMetadata(null));
+        public static readonly DependencyProperty CapturePointYProperty = DependencyProperty.Register(nameof(CapturePointY), typeof(double), typeof(ScreenCoordinateBehavior), new PropertyMetadata(null));
 
         public static readonly DependencyProperty CaptureControlProperty = DependencyProperty.Register(nameof(CaptureControl), typeof(UIElement), typeof(ScreenCoordinateBehavior), new PropertyMetadata(null));
 
@@ -80,6 +106,10 @@ namespace ScreenShotAnimation.Behaviors
 
             CaptureWidth = CaptureControl.ActualWidth;
             CaptureHeight = CaptureControl.ActualHeight;
+
+            var p = CaptureControl.PointToScreen(new Point(0, 0));
+            CapturePointX = p.X;
+            CapturePointY = p.Y;
         }
 
         private void AssociatedObject_LocationChanged(object sender, EventArgs e)
@@ -88,6 +118,10 @@ namespace ScreenShotAnimation.Behaviors
 
             CaptureWidth = CaptureControl.ActualWidth;
             CaptureHeight = CaptureControl.ActualHeight;
+
+            var p = CaptureControl.PointToScreen(new Point(0, 0));
+            CapturePointX = p.X;
+            CapturePointY = p.Y;
         }
 
         private void AssociatedObject_SizeChanged(object sender, SizeChangedEventArgs e)
