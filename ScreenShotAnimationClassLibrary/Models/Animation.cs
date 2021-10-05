@@ -80,7 +80,7 @@ namespace ScreenShotAnimation.Models
                 image.Save(ms, ImageFormat.Bmp);
                 ms.Position = 0;
                 MagickImage canvas = new MagickImage(ms);
-                canvas.AnimationDelay = (int)Math.Round(_animationInterval / 10d, 0);
+                canvas.AnimationDelay = (int)Math.Ceiling(_animationInterval / 10d);
                 _collection.Add(canvas);
             }
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ScreenShotAnimation.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -11,15 +12,17 @@ namespace ScreenShotAnimation.Models
 {
     public class Recorder : INotifyPropertyChanged
     {
-        public Recorder()
+        public Recorder(IUserSettings settings)
         {
+            _settings = settings;
             Rect = new CaptureRect();
-            FrameRate = new FrameRate();
+            FrameRate = new FrameRate(_settings.Fps);
         }
 
         private readonly List<Task> _tasks = new List<Task>();
         private CancellationTokenSource _tokenSource;
         private Animation _animation;
+        private IUserSettings _settings;
 
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -64,6 +67,10 @@ namespace ScreenShotAnimation.Models
         /// </summary>
         public Task StartAsync()
         {
+            //設定を保存しておく
+            _settings.Fps = FrameRate.Fps;
+            _settings.Save();
+
             var animationInterval = FrameRate.Interval;
 
             _animation = new Animation(animationInterval);

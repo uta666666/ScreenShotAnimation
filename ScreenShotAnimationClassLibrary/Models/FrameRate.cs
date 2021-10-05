@@ -8,13 +8,18 @@ namespace ScreenShotAnimation.Models
 {
     public class FrameRate : INotifyPropertyChanged
     {
+        public FrameRate(int Fps = 15)
+        {
+            _fps = Fps;
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         private void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private int _fps = 15;
+        private int _fps;
 
         public int Fps
         {
@@ -35,7 +40,7 @@ namespace ScreenShotAnimation.Models
         {
             get
             {
-                return (int)Math.Round(1000d / _fps);
+                return (int)Math.Ceiling(1000d / _fps);
             }
         }
 

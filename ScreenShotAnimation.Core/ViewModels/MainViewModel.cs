@@ -29,7 +29,7 @@ namespace ScreenShotAnimation.ViewModels
         {
             try
             {
-                _recorder = new Recorder();
+                _recorder = new Recorder(new UserSettings());
 
                 //保存ファイル名
                 SavePath = _recorder.ToReactivePropertyAsSynchronized(x => x.FilePath);
