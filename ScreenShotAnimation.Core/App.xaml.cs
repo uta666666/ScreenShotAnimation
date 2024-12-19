@@ -5,12 +5,6 @@ using Microsoft.Extensions.Options;
 using ScreenShotAnimation.Models;
 using ScreenShotAnimation.ViewModels;
 using ScreenShotAnimation.Views;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace ScreenShotAnimation
