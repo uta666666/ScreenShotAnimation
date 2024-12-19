@@ -1,6 +1,7 @@
 ﻿using Livet.Messaging;
 using Livet.Messaging.IO;
 using MaterialDesignThemes.Wpf;
+using Microsoft.Extensions.Options;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using ScreenShotAnimation.Models;
@@ -25,18 +26,19 @@ namespace ScreenShotAnimation.ViewModels
         private Recorder _recorder;
 
         private CaptureRectViewModel _captureViewModel;
+        private AppSettings _settings;
 
         #endregion フィールド変数
-
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public MiniViewModel()
+        public MiniViewModel(IOptions<AppSettings> settings)
         {
             try
             {
-                _recorder = new Recorder(new UserSettings());
+                _settings = settings.Value;
+                _recorder = new Recorder(_settings.RecorderSettings);
 
                 //保存ファイル名
                 SavePath = _recorder.ToReactivePropertyAsSynchronized(x => x.FilePath);

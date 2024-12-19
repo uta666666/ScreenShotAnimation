@@ -1,6 +1,7 @@
 ﻿using Livet.Messaging;
 using Livet.Messaging.IO;
 using MaterialDesignThemes.Wpf;
+using Microsoft.Extensions.Options;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using ScreenShotAnimation.Models;
@@ -22,6 +23,7 @@ namespace ScreenShotAnimation.ViewModels
         private Recorder _recorder;
 
         private CaptureRectViewModel _captureViewModel;
+        private AppSettings _settings;
 
         #endregion フィールド変数
 
@@ -29,11 +31,12 @@ namespace ScreenShotAnimation.ViewModels
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public MainViewModel()
+        public MainViewModel(IOptions<AppSettings> settings)
         {
             try
             {
-                _recorder = new Recorder(new UserSettings());
+                _settings = settings.Value;
+                _recorder = new Recorder(_settings.RecorderSettings);
 
                 //保存ファイル名
                 SavePath = _recorder.ToReactivePropertyAsSynchronized(x => x.FilePath);
@@ -96,8 +99,8 @@ namespace ScreenShotAnimation.ViewModels
 
             var isNotSetWidth = CaptureWidth.Select(x => x == 0);
             var isNotSetHeight = CaptureHeight.Select(x => x == 0);
-            StartRecordingCommand = new[] { IsRecording, IsSaving, isNotSetWidth, isNotSetHeight }.CombineLatestValuesAreAllFalse().ToReactiveCommand<Window>();
-            StartRecordingCommand.Subscribe(async (Window x) =>
+            StartRecordingCommand = new[] { IsRecording, IsSaving, isNotSetWidth, isNotSetHeight }.CombineLatestValuesAreAllFalse().ToReactiveCommand<UIElement>();
+            StartRecordingCommand.Subscribe(async (UIElement x) =>
             {
                 if (!CallSaveFileDialog())
                 {
@@ -130,38 +133,6 @@ namespace ScreenShotAnimation.ViewModels
                 }
 
                 ShowSaveCompletedMessage();
-            });
-
-
-            CaptureCommand = new ReactiveCommand<Window>();
-            CaptureCommand.Subscribe(w =>
-            {
-                if (_captureViewModel != null)
-                {
-                    _captureViewModel.CloseCommand?.Execute();
-                    _captureViewModel = null;
-                    CaptureWidth.Value = 0;
-                    CaptureHeight.Value = 0;
-                }
-                _captureViewModel = new CaptureRectViewModel();
-                _captureViewModel.CaptureWidth = CaptureWidth;
-                _captureViewModel.CaptureHeight = CaptureHeight;
-                _captureViewModel.CapturePointX = CapturePointX;
-                _captureViewModel.CapturePointY = CapturePointY;
-
-                Messenger.Raise(new TransitionMessage(_captureViewModel, "CaptureKey"));
-            });
-
-            CloseCaptureWindowCommand = new ReactiveCommand();
-            CloseCaptureWindowCommand.Subscribe(() =>
-            {
-                if (_captureViewModel != null)
-                {
-                    _captureViewModel.CloseCommand?.Execute();
-                    _captureViewModel = null;
-                    CaptureWidth.Value = 0;
-                    CaptureHeight.Value = 0;
-                }
             });
         }
 
@@ -280,7 +251,7 @@ namespace ScreenShotAnimation.ViewModels
 
         #region Command
 
-        public ReactiveCommand<Window> StartRecordingCommand { get; private set; }
+        public ReactiveCommand<UIElement> StartRecordingCommand { get; private set; }
 
         public ReactiveCommand StopRecordingCommand { get; private set; }
 
@@ -289,10 +260,6 @@ namespace ScreenShotAnimation.ViewModels
         public ReactiveCommand MinimizeCommand { get; private set; }
 
         public ReactiveCommand OpenSaveFileDialogCommand { get; private set; }
-
-        public ReactiveCommand<Window> CaptureCommand { get; private set; }
-
-        public ReactiveCommand CloseCaptureWindowCommand { get; private set; }
 
         #endregion Command
     }

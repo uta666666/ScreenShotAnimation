@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ScreenShotAnimation.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,8 +13,13 @@ namespace ScreenShotAnimation.Models
         public int FormStyle { get; set; }
     }
 
-    public class RecorderSettings
+    public class RecorderSettings : IUserSettings
     {
         public int Fps { get; set; }
+
+        public void Save()
+        {
+            //TODO
+        }
     }
 }

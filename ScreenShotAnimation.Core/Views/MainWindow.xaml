@@ -15,6 +15,7 @@
     Title="MainWindow"
     Width="800"
     Height="450"
+    d:DataContext="{d:DesignInstance Type=vm:MiniViewModel}"
     AllowsTransparency="True"
     Background="Transparent"
     FontFamily="{DynamicResource MaterialDesignFont}"
@@ -29,9 +30,9 @@
     WindowStyle="None"
     mc:Ignorable="d">
 
-    <Window.DataContext>
+    <!--<Window.DataContext>
         <vm:MainViewModel />
-    </Window.DataContext>
+    </Window.DataContext>-->
 
     <Window.Resources>
         <!--  Converter  -->

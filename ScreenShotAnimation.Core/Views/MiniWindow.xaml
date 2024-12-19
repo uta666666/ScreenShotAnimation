@@ -12,6 +12,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:vm="clr-namespace:ScreenShotAnimation.ViewModels"
+    d:DataContext="{d:DesignInstance Type=vm:MiniViewModel}"
     AllowsTransparency="True"
     Background="Transparent"
     FontFamily="{DynamicResource MaterialDesignFont}"
@@ -55,9 +56,9 @@
         </Style>
     </Window.Resources>
 
-    <Window.DataContext>
+    <!--<Window.DataContext>
         <vm:MiniViewModel />
-    </Window.DataContext>
+    </Window.DataContext>-->
 
     <i:Interaction.Triggers>
         <l:InteractionMessageTrigger MessageKey="SaveFileDialog" Messenger="{Binding Messenger}">
