@@ -5,7 +5,7 @@ on:
 env:
   App_Name: ScreenShotAnimation
   Solution_Path: ScreenShotAnimation.sln
-  App_Project_Path: ScreenShotAnimation/ScreenShotAnimation.Core.csproj
+  App_Project_Path: ScreenShotAnimation.Core/ScreenShotAnimation.Core.csproj
 
 jobs:
   build:
