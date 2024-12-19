@@ -1,12 +1,10 @@
-﻿using Livet.Messaging;
-using Livet.Messaging.IO;
+﻿using Livet.Messaging.IO;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Options;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using ScreenShotAnimation.Models;
 using ScreenShotAnimation.Util;
-using ScreenShotAnimation.Views;
 using System;
 using System.Data;
 using System.Diagnostics;
