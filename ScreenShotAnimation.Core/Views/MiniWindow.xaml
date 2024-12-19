@@ -1,0 +1,325 @@
+﻿<Window
+    x:Class="ScreenShotAnimation.Views.MiniWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:bh="clr-namespace:ScreenShotAnimation.Behaviors"
+    xmlns:cv="clr-namespace:ScreenShotAnimation.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
+    xmlns:local="clr-namespace:ScreenShotAnimation.Views"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:vm="clr-namespace:ScreenShotAnimation.ViewModels"
+    AllowsTransparency="True"
+    Background="Transparent"
+    FontFamily="{DynamicResource MaterialDesignFont}"
+    ResizeMode="CanMinimize"
+    SizeToContent="WidthAndHeight"
+    TextElement.FontSize="13"
+    TextElement.FontWeight="Regular"
+    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+    TextOptions.TextFormattingMode="Ideal"
+    TextOptions.TextRenderingMode="Auto"
+    Topmost="True"
+    WindowStyle="None"
+    mc:Ignorable="d">
+
+    <Window.Resources>
+        <cv:RecordButtonTextConverter x:Key="RecordButtonTextConverter" />
+        <Style x:Key="RecordIconStyle" TargetType="materialDesign:PackIcon">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsRecording.Value}" Value="True">
+                    <Setter Property="Kind" Value="Stop" />
+                    <Setter Property="Foreground" Value="Blue" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsRecording.Value}" Value="False">
+                    <Setter Property="Kind" Value="Record" />
+                    <Setter Property="Foreground" Value="Red" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style
+            x:Key="RecordButtonStyle"
+            BasedOn="{StaticResource MaterialDesignFlatButton}"
+            TargetType="Button">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsRecording.Value}" Value="True">
+                    <Setter Property="Command" Value="{Binding StopRecordingCommand}" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsRecording.Value}" Value="False">
+                    <Setter Property="Command" Value="{Binding StartRecordingCommand}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Window.DataContext>
+        <vm:MiniViewModel />
+    </Window.DataContext>
+
+    <i:Interaction.Triggers>
+        <l:InteractionMessageTrigger MessageKey="SaveFileDialog" Messenger="{Binding Messenger}">
+            <l:SaveFileDialogInteractionMessageAction />
+        </l:InteractionMessageTrigger>
+        <l:InteractionMessageTrigger MessageKey="CaptureKey" Messenger="{Binding Messenger}">
+            <l:TransitionInteractionMessageAction Mode="NewOrActive" WindowType="{x:Type local:CaptureRectWindow}" />
+        </l:InteractionMessageTrigger>
+    </i:Interaction.Triggers>
+
+    <i:Interaction.Behaviors>
+        <bh:DragMoveBehavior IsCanMove="True" />
+    </i:Interaction.Behaviors>
+
+    <!--  ショートカットキー  -->
+    <Window.InputBindings>
+        <KeyBinding Command="{Binding CaptureCommand}" Gesture="F3" />
+        <KeyBinding Command="{Binding CloseCaptureWindowCommand}" Gesture="ESC" />
+    </Window.InputBindings>
+
+    <Border
+        Background="{DynamicResource MaterialDesignPaper}"
+        BorderBrush="DimGray"
+        BorderThickness="1"
+        CornerRadius="10">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel
+                Grid.Row="0"
+                Grid.Column="0"
+                Margin="10,0,10,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Stretch"
+                IsEnabled="{Binding IsProcessing.Value, Converter={StaticResource InvertBooleanConverter}}"
+                Orientation="Horizontal">
+                <Button Command="{Binding CaptureCommand}" Style="{DynamicResource MaterialDesignIconButton}">
+                    <materialDesign:PackIcon
+                        Width="45"
+                        Height="45"
+                        Margin="0"
+                        Kind="SelectDrag" />
+                    <Button.ToolTip>
+                        <ToolTip>
+                            <TextBlock Text="Select Capture Area (F3)" />
+                        </ToolTip>
+                    </Button.ToolTip>
+                </Button>
+                <TextBox
+                    Width="40"
+                    Margin="10,10,5,10"
+                    Padding="-10"
+                    HorizontalAlignment="Left"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    BorderBrush="Gray"
+                    FontSize="11"
+                    IsReadOnly="True"
+                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                    Text="{Binding CaptureWidth.Value, Mode=OneWay}" />
+                <TextBlock VerticalAlignment="Center" Text="×" />
+                <TextBox
+                    Width="40"
+                    Margin="5,10,0,10"
+                    Padding="-10"
+                    HorizontalAlignment="Left"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    BorderBrush="Gray"
+                    FontSize="11"
+                    IsReadOnly="True"
+                    Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                    Text="{Binding CaptureHeight.Value, Mode=OneWay}" />
+                <TextBlock
+                    Margin="5,10,5,0"
+                    VerticalAlignment="Center"
+                    FontSize="10"
+                    Text="px" />
+            </StackPanel>
+
+            <Grid
+                Grid.Row="0"
+                Grid.Column="1"
+                Margin="0,0,10,0"
+                HorizontalAlignment="Right">
+                <StackPanel
+                    Margin="0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    IsEnabled="{Binding IsProcessing.Value, Converter={StaticResource InvertBooleanConverter}}"
+                    Orientation="Horizontal">
+                    <Separator
+                        Width="1"
+                        Margin="0,5,0,5"
+                        Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+                    <Slider
+                        x:Name="sliderFps"
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Width="120"
+                        Margin="10,0,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        IsSnapToTickEnabled="True"
+                        Maximum="60"
+                        Minimum="1"
+                        TickFrequency="1"
+                        Value="{Binding Fps.Value}" />
+                    <TextBox
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Width="40"
+                        Margin="10,10,0,10"
+                        Padding="-10"
+                        HorizontalAlignment="Left"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        FontSize="11"
+                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                        Text="{Binding Value, ElementName=sliderFps}" />
+                    <TextBlock
+                        Margin="5,10,5,0"
+                        VerticalAlignment="Center"
+                        FontSize="10"
+                        Text="fps" />
+                </StackPanel>
+            </Grid>
+
+            <Grid
+                Grid.Row="0"
+                Grid.Column="2"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Stretch">
+                <StackPanel VerticalAlignment="Stretch" Orientation="Horizontal">
+                    <Separator
+                        Width="1"
+                        Margin="0,5,0,5"
+                        Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+
+                    <Button
+                        Width="70"
+                        Height="35"
+                        Margin="10,0,10,0"
+                        Padding="0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        HorizontalContentAlignment="Left"
+                        CommandParameter="{Binding ElementName=captureWindow}"
+                        Style="{StaticResource RecordButtonStyle}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon
+                                Width="40"
+                                Height="40"
+                                VerticalAlignment="Center"
+                                Style="{StaticResource RecordIconStyle}" />
+                            <TextBlock
+                                VerticalAlignment="Bottom"
+                                Foreground="{DynamicResource MaterialDesignDarkForeground}"
+                                Text="{Binding IsRecording.Value, Converter={StaticResource RecordButtonTextConverter}}" />
+                        </StackPanel>
+                    </Button>
+                    <!--<Button
+                    Width="100"
+                    Margin="10,0,0,0"
+                    Padding="0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    HorizontalContentAlignment="Left"
+                    Command="{Binding StartRecordingCommand}"
+                    CommandParameter="{Binding ElementName=captureWindow}"
+                    Style="{StaticResource MaterialDesignFlatButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon
+                            Width="30"
+                            Height="30"
+                            Margin="0"
+                            Foreground="Red"
+                            Kind="Record" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource MaterialDesignDarkForeground}"
+                            Text="Rec" />
+                        <TextBlock
+                            Margin="3,0,0,5"
+                            VerticalAlignment="Bottom"
+                            FontSize="10"
+                            Foreground="{DynamicResource MaterialDesignDarkForeground}"
+                            Text="(F11)" />
+                    </StackPanel>
+                </Button>-->
+
+                    <!--<Button
+                    Width="100"
+                    Margin="10,0,0,0"
+                    Padding="0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    HorizontalContentAlignment="Left"
+                    materialDesign:ButtonProgressAssist.IsIndeterminate="True"
+                    Command="{Binding StopRecordingCommand}"
+                    Style="{StaticResource MaterialDesignFlatButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon
+                            Width="30"
+                            Height="30"
+                            Margin="0"
+                            Foreground="Blue"
+                            Kind="Stop" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource MaterialDesignDarkForeground}"
+                            Text="Stop" />
+                        <TextBlock
+                            Margin="3,0,0,5"
+                            VerticalAlignment="Bottom"
+                            FontSize="10"
+                            Foreground="{DynamicResource MaterialDesignDarkForeground}"
+                            Text="(F12)" />
+                    </StackPanel>
+                </Button>-->
+                </StackPanel>
+            </Grid>
+
+            <StackPanel
+                Grid.Row="0"
+                Grid.Column="3"
+                Margin="0,0,0,0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Stretch"
+                Orientation="Horizontal">
+                <Separator
+                    Width="1"
+                    Margin="0,5,0,5"
+                    Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" />
+                <Button
+                    Margin="10,0,10,0"
+                    Command="{Binding CloseCommand}"
+                    Style="{DynamicResource MaterialDesignIconButton}"
+                    ToolTip="Close (ESC)">
+                    <materialDesign:PackIcon
+                        Width="30"
+                        Height="30"
+                        Margin="0"
+                        Foreground="White"
+                        Kind="ClearCircle" />
+                </Button>
+            </StackPanel>
+
+            <materialDesign:Snackbar
+                Grid.Row="1"
+                Grid.ColumnSpan="4"
+                ActionButtonStyle="{StaticResource MaterialDesignSnackbarActionMidButton}"
+                MessageQueue="{Binding SnackBarMessageQueue}" />
+        </Grid>
+    </Border>
+</Window>

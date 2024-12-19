@@ -11,11 +11,14 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace ScreenShotAnimation.ViewModels
 {
-    public class MainViewModel : Livet.ViewModel
+    public class MiniViewModel : Livet.ViewModel
     {
         #region フィールド変数
 
@@ -29,7 +32,7 @@ namespace ScreenShotAnimation.ViewModels
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public MainViewModel()
+        public MiniViewModel()
         {
             try
             {
@@ -46,8 +49,6 @@ namespace ScreenShotAnimation.ViewModels
                 Fps = _recorder.FrameRate.ToReactivePropertyAsSynchronized(x => x.Fps);
 
                 //画面の制御
-                WindowState = new ReactiveProperty<WindowState>(System.Windows.WindowState.Normal);
-                ResizeMode = new ReactiveProperty<ResizeMode>(System.Windows.ResizeMode.CanResizeWithGrip);
                 IsRecording = new ReactiveProperty<bool>(false);
                 IsSaving = new ReactiveProperty<bool>(false);
                 IsProcessing = IsRecording.CombineLatest(IsSaving, (x, y) => x || y).ToReadOnlyReactiveProperty();
@@ -81,13 +82,6 @@ namespace ScreenShotAnimation.ViewModels
             });
 
 
-            MinimizeCommand = IsRecording.Select(x => !x).ToReactiveCommand();
-            MinimizeCommand.Subscribe(() =>
-            {
-                WindowState.Value = System.Windows.WindowState.Minimized;
-            });
-
-
             OpenSaveFileDialogCommand = new[] { IsRecording, IsSaving }.CombineLatestValuesAreAllFalse().ToReactiveCommand();
             OpenSaveFileDialogCommand.Subscribe(() =>
             {
@@ -104,7 +98,13 @@ namespace ScreenShotAnimation.ViewModels
                     return;
                 }
 
-                ResizeMode.Value = System.Windows.ResizeMode.NoResize;
+                await Task.Delay(500);
+
+                if (_captureViewModel != null)
+                {
+                    _captureViewModel.StrokeColor.Value = Colors.HotPink;
+                }
+
                 IsRecording.Value = true;
 
                 await _recorder.StartAsync();
@@ -114,7 +114,8 @@ namespace ScreenShotAnimation.ViewModels
             StopRecordingCommand = IsRecording.ToReactiveCommand();
             StopRecordingCommand.Subscribe(async () =>
             {
-                ResizeMode.Value = System.Windows.ResizeMode.CanResizeWithGrip;
+                CloseCaptureWindow();
+
                 IsRecording.Value = false;
 
                 IsSaving.Value = true;
@@ -136,13 +137,8 @@ namespace ScreenShotAnimation.ViewModels
             CaptureCommand = new ReactiveCommand<Window>();
             CaptureCommand.Subscribe(w =>
             {
-                if (_captureViewModel != null)
-                {
-                    _captureViewModel.CloseCommand?.Execute();
-                    _captureViewModel = null;
-                    CaptureWidth.Value = 0;
-                    CaptureHeight.Value = 0;
-                }
+                CloseCaptureWindow();
+
                 _captureViewModel = new CaptureRectViewModel();
                 _captureViewModel.CaptureWidth = CaptureWidth;
                 _captureViewModel.CaptureHeight = CaptureHeight;
@@ -155,14 +151,22 @@ namespace ScreenShotAnimation.ViewModels
             CloseCaptureWindowCommand = new ReactiveCommand();
             CloseCaptureWindowCommand.Subscribe(() =>
             {
-                if (_captureViewModel != null)
-                {
-                    _captureViewModel.CloseCommand?.Execute();
-                    _captureViewModel = null;
-                    CaptureWidth.Value = 0;
-                    CaptureHeight.Value = 0;
-                }
+                CloseCaptureWindow();
             });
+        }
+
+        /// <summary>
+        /// キャプチャーwindowを消す
+        /// </summary>
+        private void CloseCaptureWindow()
+        {
+            if (_captureViewModel != null)
+            {
+                _captureViewModel.CloseCommand?.Execute();
+                _captureViewModel = null;
+                CaptureWidth.Value = 0;
+                CaptureHeight.Value = 0;
+            }
         }
 
         /// <summary>
@@ -205,30 +209,12 @@ namespace ScreenShotAnimation.ViewModels
         /// </summary>
         private void ShowSaveCompletedMessage()
         {
-            var actionHandler = new Action<object>(_ => { Process.Start(new ProcessStartInfo(SavePath.Value) { UseShellExecute = true }); });
+            var actionHandler = new Action<object>(_ =>
+            {
+                Process.Start(new ProcessStartInfo(SavePath.Value) { UseShellExecute = true });
+            });
             ShowSnackBar("ファイルの保存が完了しました。", "開く", actionHandler);
         }
-
-        //private void ShowSaveCompletedMessage()
-        //{
-        //var messageVM = new MessageViewModel("Completed", "ファイルを保存しました。", "OK", "開く");
-        //ProgDialogVM.Value = messageVM;
-        //IsShowDialog.Value = true;
-
-        //messageVM.ReturnType.Where(x => x != MessageViewReturnType.None).Subscribe(t =>
-        //{
-        //    switch (t)
-        //    {
-        //        case MessageViewReturnType.Button2:
-        //            IsShowDialog.Value = false;
-        //            Process.Start(new ProcessStartInfo(SavePath.Value) { UseShellExecute = true });
-        //            break;
-        //        default:
-        //            IsShowDialog.Value = false;
-        //            break;
-        //    }
-        //});
-        //}
 
         /// <summary>
         /// メッセージを表示
@@ -260,15 +246,11 @@ namespace ScreenShotAnimation.ViewModels
 
         public ReactiveProperty<double> CapturePointY { get; set; }
 
-        public ReactiveProperty<ResizeMode> ResizeMode { get; set; }
-
         public ReactiveProperty<bool> IsCanMove { get; set; }
 
         public ReactiveProperty<int> Fps { get; set; }
 
         public ReactiveProperty<bool> IsTopMost { get; set; }
-
-        public ReactiveProperty<WindowState> WindowState { get; set; }
 
         public ReactiveProperty<bool> IsShowDialog { get; set; }
 
@@ -285,8 +267,6 @@ namespace ScreenShotAnimation.ViewModels
         public ReactiveCommand StopRecordingCommand { get; private set; }
 
         public ReactiveCommand CloseCommand { get; private set; }
-
-        public ReactiveCommand MinimizeCommand { get; private set; }
 
         public ReactiveCommand OpenSaveFileDialogCommand { get; private set; }
 

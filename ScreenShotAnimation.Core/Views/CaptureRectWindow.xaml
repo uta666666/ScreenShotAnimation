@@ -1,0 +1,56 @@
+﻿<Window
+    x:Class="ScreenShotAnimation.Views.CaptureRectWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:bh="clr-namespace:ScreenShotAnimation.Behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:l="http://schemas.livet-mvvm.net/2011/wpf"
+    xmlns:local="clr-namespace:ScreenShotAnimation.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:ScreenShotAnimation.ViewModels"
+    Title="CaptureRectWindow"
+    Width="800"
+    Height="450"
+    AllowsTransparency="True"
+    Background="Transparent"
+    WindowStyle="None"
+    mc:Ignorable="d">
+
+    <Window.DataContext>
+        <vm:CaptureRectViewModel />
+    </Window.DataContext>
+
+    <!--  ショートカットキー  -->
+    <Window.InputBindings>
+        <KeyBinding Command="{Binding CloseCommand}" Gesture="ESC" />
+    </Window.InputBindings>
+
+    <i:Interaction.Behaviors>
+        <bh:ScreenCaptureBehavior
+            CaptureHeight="{Binding CaptureHeight.Value, Mode=OneWayToSource}"
+            CapturePointX="{Binding CapturePointX.Value, Mode=OneWayToSource}"
+            CapturePointY="{Binding CapturePointY.Value, Mode=OneWayToSource}"
+            CaptureWidth="{Binding CaptureWidth.Value, Mode=OneWayToSource}"
+            MainCanvas="{Binding ElementName=CanvasMain}"
+            StrokeColor="{Binding StrokeColor.Value}" />
+    </i:Interaction.Behaviors>
+
+    <i:Interaction.Triggers>
+        <!--  ウィンドウを閉じる  -->
+        <l:InteractionMessageTrigger MessageKey="CloseKey" Messenger="{Binding Messenger}">
+            <l:WindowInteractionMessageAction InvokeActionOnlyWhenWindowIsActive="False">
+                <l:DirectInteractionMessage>
+                    <l:WindowActionMessage Action="Close" />
+                </l:DirectInteractionMessage>
+            </l:WindowInteractionMessageAction>
+        </l:InteractionMessageTrigger>
+    </i:Interaction.Triggers>
+
+    <Grid>
+        <Canvas
+            x:Name="CanvasMain"
+            Background="Beige"
+            Opacity="0.3" />
+    </Grid>
+</Window>
