@@ -104,7 +104,7 @@ namespace ScreenShotAnimation.ViewModels
 
                 if (_captureViewModel != null)
                 {
-                    _captureViewModel.StrokeColor.Value = Colors.HotPink;
+                    _captureViewModel.StrokeColor.Value = Colors.Red;
                 }
 
                 IsRecording.Value = true;

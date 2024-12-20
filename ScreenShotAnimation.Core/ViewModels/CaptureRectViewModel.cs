@@ -17,7 +17,7 @@ namespace ScreenShotAnimation.ViewModels
             CaptureHeight = new ReactiveProperty<double>();
             CapturePointX = new ReactiveProperty<double>();
             CapturePointY = new ReactiveProperty<double>();
-            StrokeColor = new ReactiveProperty<Color>(Colors.GreenYellow);
+            StrokeColor = new ReactiveProperty<Color>(Colors.Blue);
 
             CloseCommand = new ReactiveCommand();
             CloseCommand.Subscribe(() =>

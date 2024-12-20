@@ -129,9 +129,9 @@ namespace ScreenShotAnimation.Behaviors
                 MainCanvas.Children.Clear();
                 _selectionRectangle = new Rectangle
                 {
-                    Stroke = Brushes.GreenYellow,
+                    Stroke = new SolidColorBrush(StrokeColor),
                     StrokeThickness = 6,
-                    StrokeDashArray = [4, 2],
+                    StrokeDashArray = [2, 1],
                     Fill = Brushes.Transparent,
                 };
                 Canvas.SetLeft(_selectionRectangle, _startPoint.X);
@@ -144,6 +144,10 @@ namespace ScreenShotAnimation.Behaviors
 
         private void SetStrokeColor(Color color)
         {
+            if (_selectionRectangle == null)
+            {
+                return;
+            }
             _selectionRectangle.Stroke = new SolidColorBrush(color);
         }
 
